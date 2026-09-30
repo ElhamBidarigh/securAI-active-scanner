@@ -105,9 +105,11 @@ function sev_class(string $s): string { return 'sev-' . $s; }
     </section>
   <?php endif; ?>
 
-  <footer>
-    SecurAI · <a href="https://github.com/YOUR_USERNAME/securAI-active-scanner">GitHub</a> ·
-    Use responsibly.
+<footer>
+    SecurAI Active Scanner ·
+    <a href="https://github.com/ElhamBidarigh/securAI-active-scanner">GitHub</a> ·
+    Need a self-assessment instead?
+    <a href="https://elhambidarigh.github.io/securai/">Try the 31-point checklist →</a>
   </footer>
 </div>
 </body>
