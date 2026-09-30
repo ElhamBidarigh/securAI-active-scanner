@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  security-scan:
+  scan:
     name: Run security audit
     runs-on: ubuntu-latest
     permissions:
@@ -22,30 +22,87 @@ jobs:
         with:
           fetch-depth: 0
 
+      # ── Gitleaks ────────────────────────────────
       - name: Gitleaks - scan for hardcoded secrets
         uses: gitleaks/gitleaks-action@v2
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # ── Semgrep (container-based, produces SARIF) ─
       - name: Semgrep - SAST scan
-        uses: returntocorp/semgrep-action@v1
         continue-on-error: true
-        with:
-          config: >-
-            p/owasp-top-ten
-            p/php
-            p/javascript
-            p/secrets
-          generateSarif: true
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/src" \
+            -w /src \
+            semgrep/semgrep \
+            semgrep ci \
+              --config p/owasp-top-ten \
+              --config p/php \
+              --config p/javascript \
+              --config p/secrets \
+              --sarif --output semgrep.sarif
 
+      # ── Upload SARIF to GitHub Security tab ─────
       - name: Upload SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: semgrep.sarif
           category: semgrep
 
+      # ── Composer audit (PHP dependencies) ───────
+      - name: Composer audit
+        if: hashFiles('composer.lock') != ''
+        continue-on-error: true
+        run: |
+          composer audit --format=json --no-dev > composer-audit.json || true
+
+      # ── npm audit (JS dependencies) ─────────────
+      - name: npm audit
+        if: hashFiles('package-lock.json') != ''
+        continue-on-error: true
+        run: |
+          npm audit --json > npm-audit.json || true
+
+      # ── Build HTML report ───────────────────────
+      - name: Build HTML report
+        if: always()
+        run: python3 .github/scripts/build-report.py
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: securAI-report
+          path: security-report/
+
+      # ── Post PR comment ─────────────────────────
+      - name: Post PR comment
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## 🛡️ SecurAI Security Scan\n\n';
+            try {
+              body += fs.readFileSync('summary.md', 'utf8')
+                .replace(/^## 🛡️ SecurAI Scan\n\n/, '');
+            } catch (e) {
+              body += '_No summary generated._\n';
+            }
+            body += '\n📄 **Full report:** download the `securAI-report` artifact from the Actions tab.\n';
+            body += '\n— [SecurAI Audit Tool](https://ElhamBidarigh.github.io/securai/)';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+      # ── Fail on critical findings ───────────────
       - name: Fail on critical findings
         if: always()
         run: |
@@ -53,6 +110,7 @@ jobs:
             COUNT=$(jq '[.runs[].results[] | select(.level=="error")] | length' semgrep.sarif 2>/dev/null || echo 0)
             echo "Critical (error-level) findings: $COUNT"
             if [ "$COUNT" -gt 0 ]; then
-              echo "::warning::$COUNT critical security issues found. Review before merging."
+              echo "::error::$COUNT critical security issues found."
+              exit 1
             fi
           fi
