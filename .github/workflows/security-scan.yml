@@ -1,0 +1,58 @@
+name: SecurAI Security Scan
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  security-scan:
+    name: Run security audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks - scan for hardcoded secrets
+        uses: gitleaks/gitleaks-action@v2
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Semgrep - SAST scan
+        uses: returntocorp/semgrep-action@v1
+        continue-on-error: true
+        with:
+          config: >-
+            p/owasp-top-ten
+            p/php
+            p/javascript
+            p/secrets
+          generateSarif: true
+
+      - name: Upload SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: semgrep.sarif
+          category: semgrep
+
+      - name: Fail on critical findings
+        if: always()
+        run: |
+          if [ -f semgrep.sarif ]; then
+            COUNT=$(jq '[.runs[].results[] | select(.level=="error")] | length' semgrep.sarif 2>/dev/null || echo 0)
+            echo "Critical (error-level) findings: $COUNT"
+            if [ "$COUNT" -gt 0 ]; then
+              echo "::warning::$COUNT critical security issues found. Review before merging."
+            fi
+          fi
