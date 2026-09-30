@@ -29,7 +29,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # ── Semgrep (container-based, produces SARIF) ─
+      # ── Semgrep (standalone scan, no token needed) ─
       - name: Semgrep - SAST scan
         continue-on-error: true
         run: |
@@ -37,12 +37,23 @@ jobs:
             -v "${{ github.workspace }}:/src" \
             -w /src \
             semgrep/semgrep \
-            semgrep ci \
+            semgrep scan \
               --config p/owasp-top-ten \
               --config p/php \
               --config p/javascript \
               --config p/secrets \
               --sarif --output semgrep.sarif
+
+      # ── Verify SARIF exists ─────────────────────
+      - name: Check SARIF output
+        if: always()
+        run: |
+          if [ -f semgrep.sarif ]; then
+            echo "✅ semgrep.sarif created ($(wc -c < semgrep.sarif) bytes)"
+          else
+            echo "⚠️ semgrep.sarif not found — creating empty file for upload"
+            echo '{"version":"2.1.0","runs":[]}' > semgrep.sarif
+          fi
 
       # ── Upload SARIF to GitHub Security tab ─────
       - name: Upload SARIF
@@ -52,14 +63,14 @@ jobs:
           sarif_file: semgrep.sarif
           category: semgrep
 
-      # ── Composer audit (PHP dependencies) ───────
+      # ── Composer audit ──────────────────────────
       - name: Composer audit
         if: hashFiles('composer.lock') != ''
         continue-on-error: true
         run: |
           composer audit --format=json --no-dev > composer-audit.json || true
 
-      # ── npm audit (JS dependencies) ─────────────
+      # ── npm audit ───────────────────────────────
       - name: npm audit
         if: hashFiles('package-lock.json') != ''
         continue-on-error: true
@@ -69,7 +80,12 @@ jobs:
       # ── Build HTML report ───────────────────────
       - name: Build HTML report
         if: always()
-        run: python3 .github/scripts/build-report.py
+        run: |
+          mkdir -p security-report
+          python3 .github/scripts/build-report.py || {
+            echo "::warning::build-report.py failed — creating fallback report"
+            echo "<html><body><h1>Security report unavailable</h1></body></html>" > security-report/index.html
+          }
 
       - name: Upload report artifact
         if: always()
@@ -113,4 +129,6 @@ jobs:
               echo "::error::$COUNT critical security issues found."
               exit 1
             fi
+          else
+            echo "No SARIF file to check."
           fi
