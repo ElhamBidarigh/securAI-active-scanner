@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  scanner:
+    image: php:8.3-apache
+    container_name: securAI-scanner
+    ports:
+      - "8090:80"
+    volumes:
+      - .:/var/www/html
+    command: >
+      bash -c "apt-get update -qq &&
+               apt-get install -y -qq libcurl4-openssl-dev &&
+               docker-php-ext-install curl &&
+               a2enmod rewrite &&
+               apache2-foreground"
