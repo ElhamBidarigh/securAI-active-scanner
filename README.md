@@ -1,5 +1,7 @@
 # 🔍 SecurAI Active Scanner
 
+[![Security Scan](https://github.com/ElhamBidarigh/securAI-active-scanner/actions/workflows/security-scan.yml/badge.svg)](https://github.com/ElhamBidarigh/securAI-active-scanner/actions/workflows/security-scan.yml)
+
 A PHP-based tool that fetches a live URL and runs 11 non-destructive security checks — then produces a visual report with a risk score.
 
 **WARNING: Only scan sites you own or have written permission to test. Unauthorized scanning is illegal in many jurisdictions.**
