@@ -2,7 +2,7 @@
 
 [![Security Scan](https://github.com/ElhamBidarigh/securAI-active-scanner/actions/workflows/security-scan.yml/badge.svg)](https://github.com/ElhamBidarigh/securAI-active-scanner/actions/workflows/security-scan.yml)
 
-A PHP-based tool that fetches a live URL and runs 11 non-destructive security checks — then produces a visual report with a risk score.
+A PHP-based tool that fetches a live URL and runs 11 non-destructive security checks - then produces a visual report with a risk score.
 
 **WARNING: Only scan sites you own or have written permission to test. Unauthorized scanning is illegal in many jurisdictions.**
 
@@ -22,7 +22,7 @@ A PHP-based tool that fetches a live URL and runs 11 non-destructive security ch
 | 10 | Open redirect parameters | High |
 | 11 | Weak HSTS max-age | Medium |
 
-All checks are non-destructive — no exploitation, no fuzzing, no payloads that could damage the target.
+All checks are non-destructive - no exploitation, no fuzzing, no payloads that could damage the target.
 
 ## Quick start
 
@@ -71,16 +71,16 @@ This prevents the tool from being abused as an SSRF proxy.
 |------|------|------|
 | 🛡️ Audit Tool | Self-assessment (browser) | [Live demo](https://elhambidarigh.github.io/securai/) |
 | 🔬 Vuln Lab | Educational (PHP/MySQL) | [Repo](https://github.com/ElhamBidarigh/securAI-vuln-lab) |
-| ⚙️ Security Action | CI/CD (GitHub Actions) | [Workflow](https://github.com/ElhamBidarigh/securAI-vuln-lab/tree/main/.github/workflows) |
-| 🔍 Active Scanner | Live URL scanner (PHP) | You are here |
+| 🔐 JWT Analyzer | CLI (Python) | [Repo](https://github.com/ElhamBidarigh/jwt-analyzer) |
+| 🔍 Active Scanner | Live URL scanner (PHP) | [Repo](https://github.com/ElhamBidarigh/securAI-active-scanner) |
 
 ## Use cases
 
-- Before launching a new site — catch missing headers and exposed files
-- Before a security review — generate a quick snapshot of the attack surface
-- For client work — produce a shareable HTML report
-- For learning — see how common misconfigurations look in HTTP responses
+- Before launching a new site - catch missing headers and exposed files
+- Before a security review - generate a quick snapshot of the attack surface
+- For client work - produce a shareable HTML report
+- For learning - see how common misconfigurations look in HTTP responses
 
 ## License
 
-MIT — use responsibly.
+MIT - use responsibly.
