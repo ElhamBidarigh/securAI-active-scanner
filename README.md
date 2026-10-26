@@ -73,6 +73,7 @@ This prevents the tool from being abused as an SSRF proxy.
 | 🔬 Vuln Lab | Educational (PHP/MySQL) | [Repo](https://github.com/ElhamBidarigh/securAI-vuln-lab) |
 | 🔐 JWT Analyzer | CLI (Python) | [Repo](https://github.com/ElhamBidarigh/jwt-analyzer) |
 | 🔍 Active Scanner | Live URL scanner (PHP) | [Repo](https://github.com/ElhamBidarigh/securAI-active-scanner) |
+| 🔌 MCP Scanner | CLI (Python) | [Repo](https://github.com/ElhamBidarigh/securAI-mcp-scanner) |
 
 ## Use cases
 
