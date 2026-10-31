@@ -74,6 +74,7 @@ This prevents the tool from being abused as an SSRF proxy.
 | 🔐 JWT Analyzer | CLI (Python) | [Repo](https://github.com/ElhamBidarigh/jwt-analyzer) |
 | 🔍 Active Scanner | Live URL scanner (PHP) | [Repo](https://github.com/ElhamBidarigh/securAI-active-scanner) |
 | 🔌 MCP Scanner | CLI (Python) | [Repo](https://github.com/ElhamBidarigh/securAI-mcp-scanner) |
+| 🧪 Prompt Tester | CLI (Python) | [Repo](https://github.com/ElhamBidarigh/securAI-prompt-tester) |
 
 ## Use cases
 

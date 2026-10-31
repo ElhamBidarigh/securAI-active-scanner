@@ -51,7 +51,7 @@ jobs:
           if [ -f semgrep.sarif ]; then
             echo "✅ semgrep.sarif created ($(wc -c < semgrep.sarif) bytes)"
           else
-            echo "⚠️ semgrep.sarif not found — creating empty file for upload"
+            echo "⚠️ semgrep.sarif not found - creating empty file for upload"
             echo '{"version":"2.1.0","runs":[]}' > semgrep.sarif
           fi
 
@@ -83,7 +83,7 @@ jobs:
         run: |
           mkdir -p security-report
           python3 .github/scripts/build-report.py || {
-            echo "::warning::build-report.py failed — creating fallback report"
+            echo "::warning::build-report.py failed - creating fallback report"
             echo "<html><body><h1>Security report unavailable</h1></body></html>" > security-report/index.html
           }
 
@@ -109,7 +109,7 @@ jobs:
               body += '_No summary generated._\n';
             }
             body += '\n📄 **Full report:** download the `securAI-report` artifact from the Actions tab.\n';
-            body += '\n— [SecurAI Audit Tool](https://ElhamBidarigh.github.io/securai/)';
+            body += '\n- [SecurAI Audit Tool](https://ElhamBidarigh.github.io/securai/)';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,

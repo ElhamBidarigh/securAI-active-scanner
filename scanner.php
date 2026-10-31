@@ -238,7 +238,7 @@ class SecurAIScanner
                 if (!preg_match('/;\s*HttpOnly/i', $cookie)) {
                     $this->add('cookie-httponly','medium','Cookies',
                         "Cookie '{$name}' missing HttpOnly flag",
-                        'JavaScript can read this cookie — XSS leads to session theft.',
+                        'JavaScript can read this cookie - XSS leads to session theft.',
                         'Add ; HttpOnly to the Set-Cookie header.');
                 }
                 if (!preg_match('/;\s*SameSite/i', $cookie)) {
@@ -291,8 +291,8 @@ class SecurAIScanner
     private function checkDotFiles(): void
     {
         $targets = [
-            '/.git/HEAD' => 'Git repository exposed — full source code may be downloadable.',
-            '/.env'      => 'Environment file exposed — credentials may be leaked.',
+            '/.git/HEAD' => 'Git repository exposed - full source code may be downloadable.',
+            '/.env'      => 'Environment file exposed - credentials may be leaked.',
             '/.htaccess' => 'Apache config exposed.',
             '/.DS_Store' => 'macOS metadata exposed.',
         ];
@@ -337,7 +337,7 @@ class SecurAIScanner
             $this->add('robots','low','Disclosure',
                 'robots.txt exposes sensitive paths',
                 'Paths found: ' . implode(', ', array_slice($hits, 0, 5)),
-                'robots.txt is public. Move sensitive paths behind auth — not to robots.txt.');
+                'robots.txt is public. Move sensitive paths behind auth - not to robots.txt.');
         }
     }
 
@@ -394,7 +394,7 @@ class SecurAIScanner
     }
 
     // ─────────────────────────────────────────────
-    // CHECK 10: Open redirect (safe — no follow)
+    // CHECK 10: Open redirect (safe - no follow)
     // ─────────────────────────────────────────────
     private function checkOpenRedirect(): void
     {
